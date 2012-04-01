@@ -1,0 +1,219 @@
+﻿Theater
+---------------------------
+theaterId: numeric(4,0)
+name: varchar(15)
+address: varchar(25)
+---------------------------
+PK: theaterId
+CK: address
+
+Movie
+---------------------------
+movieId: numeric(5,0)
+title: varchar(20)
+director: varchar(20)
+star: numeric(1,0)
+type: varchar (10,5)
+Description: varchar(200)
+---------------------------
+PK: movieId
+CK: title, director
+
+
+Room
+----------------------------
+name: varchar(10)
+theaterId: numeric(4,0)
+----------------------------
+PK: name, theaterId
+
+
+PlaySchedule
+---------------------------
+ticketId: numeric(12,0)
+movieId: numeric(5,0)
+theaterId: numeric(4,0)
+room: varchar(10)
+time: date
+price: numric (6,2)
+---------------------------
+PK: ticketId
+FK: movieId references Movie
+FK: theaterId references Theater
+FK: room references Room(name)
+CK: movieId,theaterId,time,room
+
+
+GuestRecord
+----------------------------
+recordId: numeric(15,0)
+firstName: varchar(10)
+lastName: varchar(10)
+email: varchar(20)
+phone: numeric(20,12)
+movieId: numeric(5,0)
+theaterId: numeric(4,0)
+number: numeric(4,0)
+time: date
+-----------------------------
+PK: recordId
+FK: movieId references Movie
+FK: theaterId references Theater
+FK: time references PlaySchedule
+
+
+MemberInfo
+----------------------------
+memberId: numeric(8,0)
+firstName: varchar(10)
+lastName: varchar(10)
+email: varchar(20)
+creditCardNo: numeric(20,0)
+creditCardType: varchar(10)
+phone: numeric(20,12)
+address: varchar(25)
+zipCode: numeric(5,0)
+----------------------------
+PK: memberId
+CK: email
+CK: creditCardNo
+CK: firstName,lastName,phone
+CK: firstName,lastName,address
+
+StaffInfo
+-----------------------------
+staffId: numeric(5,0)
+theaterId: numeric(4,0)
+firstName: varchar(10)
+lastName: varchar(10)
+phone: numeric(20,12)
+address: varchar(25)
+zipCode: numeric(5,0)
+ssn: numeric(9,0)
+groupId: numeric:(3,0)
+-----------------------------
+PK: staffId
+FK: groupId references StaffGroup
+FK: theaterId references Theater
+CK: ssn
+CK: phone
+CK: firstName, lastName, address
+
+
+Account
+-----------------------------
+accountId: numeric(8,0)
+password: varchar(16,0)
+accountType: varChar(10,0)
+point: numeric(8,0)
+memberId: numeric(8,0)
+staffId: numeric(5,0)
+-----------------------------
+PK: acountId
+FK: memberId references MemberInfo
+FK: staffId references StaffInfo
+FK: typeId references AccountType
+CK: memberId, staffId
+
+AccountType
+------------------------------
+typeId: numeric(3,0)
+typeName: varchar(10,0)
+------------------------------
+PK: typeId
+CK: typeName
+
+
+MemberHistory
+------------------------------
+accountId: numeric(8,0)
+ticketId: numeric(12,0)
+number: numeric(4,0)
+discount: numberic(2,2)
+------------------------------
+PK: accountId, ticketId
+
+
+StaffGroup
+------------------------------
+groupId: numeric:(2,0)
+groupName: varchar(10,0)
+------------------------------
+PK:groupId
+CK:groupName
+
+
+JobGroup
+------------------------------
+jobId: numeric:(3,0)
+jobName: varchar:(10,0)
+------------------------------
+PK:jobId
+CK:jobName
+
+
+WorkSchedule
+------------------------------
+staffId: numeric(5,0)
+jobId: numeric(3,0)
+time: date
+theaterId: numeric(4,0) 
+comment: varchar(100,0)
+------------------------------
+PK: staffId, time
+FK: staffId references StaffInfo
+FK: jobId references JobGroup
+FK: theaterId references Theater
+
+
+MovieThread
+--------------------------------
+threadId(12,0)
+accountId: numeric(8,0)
+movieId: numeric(5,0)
+star: numeric(1,0)
+review: varchar(2000,0)
+--------------------------------
+PK: threadId
+FK: accountId references Account
+FK: movieId references Movie
+CK: accountId, movieId
+
+
+TheaterThread
+--------------------------------
+threadId: numeric(12,0)
+accountId: numeric(8,0)
+theaterId: numeric(5,0)
+review: varchar(2000,0)
+--------------------------------
+PK: threadId
+FK: accountId references Account
+FK: movieId references Movie
+
+
+Reply
+--------------------------------
+replyId: numeric(14,0)
+accountId: numeric(8,0)
+mThreadId: varchar(10,0)
+tThreadId: varchar(10,0)
+comment: varchar(2000,0)
+--------------------------------
+PK: replyId
+FK: accountId references Account
+FK: mThreadId references MovieThread(threadId)
+FK: tThreadId references TheaterThread(threadId)
+
+
+LikeOrNot
+--------------------------------
+accountId: numeric(8,0)
+mThreadId: varchar(10,0)
+tThreadId: varchar(10,0)
+like: Boolean
+--------------------------------
+PK: accountId, mThreadId, tThreadId
+FK: accountId references Account
+FK: mThreadId references MovieThread(threadId)
+FK: tThreadId references TheaterThread(threadId)
