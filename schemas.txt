@@ -1,8 +1,9 @@
-﻿Theater
+﻿﻿Theater
 ---------------------------
 theaterId: numeric(4,0)
 name: varchar(15)
 address: varchar(25)
+zipcode: numeric(5,0)
 ---------------------------
 PK: theaterId
 CK: address
@@ -12,20 +13,41 @@ Movie
 movieId: numeric(5,0)
 title: varchar(20)
 director: varchar(20)
-star: numeric(1,0)
-type: varchar (10,5)
-Description: varchar(200)
+stars: varchar(200)
+description: varchar(250)
 ---------------------------
 PK: movieId
 CK: title, director
+
+
+Type
+---------------------------
+typeId: numeric(3,0)
+typeName: varchar(200)
+---------------------------
+PK: typeId
+CK: typeName
+
+
+
+MovieType
+----------------------------
+movieId: numeric(5,0)
+typeId: numeric(3,0)
+----------------------------
+PK: movieId,typeId
+FK: movieId references Movie
+FK: typeId references Type
 
 
 Room
 ----------------------------
 name: varchar(10)
 theaterId: numeric(4,0)
+capacity: numeric(4,0)
 ----------------------------
-PK: name, theaterId
+PK: name,theaterId
+FK: theaterId references Theater
 
 
 PlaySchedule
@@ -35,13 +57,12 @@ movieId: numeric(5,0)
 theaterId: numeric(4,0)
 room: varchar(10)
 time: date
-price: numric (6,2)
+price: numeric (6,2)
 ---------------------------
 PK: ticketId
 FK: movieId references Movie
 FK: theaterId references Theater
 FK: room references Room(name)
-CK: movieId,theaterId,time,room
 
 
 GuestRecord
@@ -50,16 +71,14 @@ recordId: numeric(15,0)
 firstName: varchar(10)
 lastName: varchar(10)
 email: varchar(20)
-phone: numeric(20,12)
-movieId: numeric(5,0)
-theaterId: numeric(4,0)
-number: numeric(4,0)
-time: date
+phone: numeric(12,0)
+creditCard: numeric(12,0)
+cardType: varchar(20)
+ticketId: numeric(8,0)
+quantity: numeric(4,0)
 -----------------------------
 PK: recordId
-FK: movieId references Movie
-FK: theaterId references Theater
-FK: time references PlaySchedule
+FK: ticketId references PlaySchedule
 
 
 MemberInfo
@@ -68,15 +87,16 @@ memberId: numeric(8,0)
 firstName: varchar(10)
 lastName: varchar(10)
 email: varchar(20)
-creditCardNo: numeric(20,0)
-creditCardType: varchar(10)
-phone: numeric(20,12)
+creditCard: numeric(20,0)
+cardType: varchar(20)
+phone: numeric(12,0)
 address: varchar(25)
-zipCode: numeric(5,0)
+zipcode: numeric(5,0)
+expiration: date
 ----------------------------
 PK: memberId
 CK: email
-CK: creditCardNo
+CK: creditCard
 CK: firstName,lastName,phone
 CK: firstName,lastName,address
 
@@ -88,7 +108,7 @@ firstName: varchar(10)
 lastName: varchar(10)
 phone: numeric(20,12)
 address: varchar(25)
-zipCode: numeric(5,0)
+zipcode: numeric(5,0)
 ssn: numeric(9,0)
 groupId: numeric:(3,0)
 -----------------------------
@@ -103,8 +123,8 @@ CK: firstName, lastName, address
 Account
 -----------------------------
 accountId: numeric(8,0)
-password: varchar(16,0)
-accountType: varChar(10,0)
+password: varchar(16)
+typeId: numeric(10,0)
 point: numeric(8,0)
 memberId: numeric(8,0)
 staffId: numeric(5,0)
@@ -128,16 +148,19 @@ MemberHistory
 ------------------------------
 accountId: numeric(8,0)
 ticketId: numeric(12,0)
-number: numeric(4,0)
-discount: numberic(2,2)
+quantity: numeric(4,0)
+discount: numeric(3,2)
 ------------------------------
 PK: accountId, ticketId
+FK: accountId references accountId in Account
+FK: ticketId references ticketId in PlaySchedule
 
 
 StaffGroup
 ------------------------------
 groupId: numeric:(2,0)
 groupName: varchar(10,0)
+description: varchar(150)
 ------------------------------
 PK:groupId
 CK:groupName
@@ -171,7 +194,6 @@ MovieThread
 threadId(12,0)
 accountId: numeric(8,0)
 movieId: numeric(5,0)
-star: numeric(1,0)
 review: varchar(2000,0)
 --------------------------------
 PK: threadId
@@ -189,15 +211,15 @@ review: varchar(2000,0)
 --------------------------------
 PK: threadId
 FK: accountId references Account
-FK: movieId references Movie
+FK: theaterid references theater
 
 
 Reply
 --------------------------------
 replyId: numeric(14,0)
 accountId: numeric(8,0)
-mThreadId: varchar(10,0)
-tThreadId: varchar(10,0)
+mThreadId: numeric(8,0)
+tThreadId: numeric(8,0)
 comment: varchar(2000,0)
 --------------------------------
 PK: replyId
