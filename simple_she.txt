@@ -1,0 +1,112 @@
+Theater(theaterId, name, address, zipCode)
+PK: theaterId
+CK: address
+
+
+Movie(movieId, title, director, stars, description)
+PK: movieId
+CK: title, director
+
+Type(typeId, typeName)
+PK: typeId
+CK: typeName
+
+MovieType(movieId, typeId)
+PK: movieId,typeId
+FK: movieId references movieId in Movie
+FK: typeId references typeId in Type
+
+Room(theaterId, name, capacity)
+PK: theaterId, name
+FK: theaterId references theaterId in Theater
+
+PlaySchedule(ticketId, movieId, theaterId, room, time, price)
+PK: ticketId
+FK: movieId references movieId in Movie
+FK: theaterId references theaterId in Theater
+FK: room references name in Room
+
+GuestRecord(recordId, firstName, lastName, email, phone, creditCard, cardType, ticketId, quantity)
+PK: recordId
+FK: ticketId references ticketId in PlaySchedule
+
+* An indivisual can use different credit card in different records, as well as different addresses. 
+  It is also accesble for family members to share the same email address.
+
+MemberInfo(memberId, firstName, lastName, email, phone, address, zipCode, creditCard, cardType, expiration)
+PK: memberId
+CK: email
+CK: creditCard
+CK: firstName, lastName, phone
+CK: firstName, lastName, address
+
+StaffInfo(staffId, theaterId, firstName, lastName, phone, address, zipCode, ssn, groupId)
+PK: staffId
+FK: groupId references groupId in StaffGroup
+FK: theaterId references theaterId in Theater
+CK: ssn
+CK: phone
+CK: firstName, lastName, address
+
+Account(accountId, password, typeId, point, memberId, staffId)
+PK: accountId
+FK: memberId references MemberInfo
+FK: staffId references StaffInfo
+FK: typeId references AccountType
+CK: memberId, staffId
+
+* An account must at least have a memberId or a staffId, the other field can be null.
+
+AccountType(typeId, typeName)
+PK: typeId
+CK: typeName
+
+MemberHistory(accountId, ticketId, quantity, discount)
+PK: accountId, ticketId
+FK: accountId references accountId in Account
+FK: ticketId references ticketId in PlaySchedule
+
+StaffGroup(groupId, groupName, description)
+PK:groupId
+CK:groupName
+
+JobGroup(jobId, jobName)
+PK:jobId
+CK:jobName
+
+WorkSchedule(staffId, jobId, time, theaterId, comment)
+PK: staffId, time
+FK: staffId references staffId in StaffInfo
+FK: jobId references jobId in JobGroup
+FK: theaterId references theaterId in Theater
+
+MovieThread(threadId, accountId, movieId, review)
+PK: threadId
+FK: accountId references accountId Account
+FK: movieId references movieId in Movie
+CK: accountId, movieId
+
+TheaterThread(threadId, accountId theaterId, review)
+PK: threadId
+FK: accountId references accountId in Account
+FK: theaterId references theaterId in Theater
+
+* An account can have several reviews for a theater.
+
+Reply(replyId, accountId, mThreadId, tThreadId, comment)
+PK: replyId
+FK: accountId references accountId in Account
+FK: mThreadId references threadId in MovieThread
+FK: tThreadId references threadId in TheaterThread
+
+* A reply can only and must have either a mThreadId or a tThreadId.
+
+LikeOrNot (accountId, mThreadId, tThreadId, like)
+PK: accountId, mThreadId, tThreadId
+FK: accountId references accountId in Account
+FK: mThreadId references threadId in MovieThread
+FK: tThreadId references threadId in TheaterThread
+
+* A tuple can only and must have either a mThreadId or a tThreadId, the other must be null.
+* The value of like shows whether the account likes the thread or dislike it.
+  True = like, False = dislike
